@@ -4,7 +4,7 @@ use leptos::*;
 use uuid::Uuid;
 
 #[derive(Clone, Copy)]
-struct ListboxContext {
+pub struct ListboxContext {
     id: Uuid,
     open: RwSignal<bool>,
     selected: RwSignal<Option<Uuid>>,
@@ -42,13 +42,19 @@ pub fn ListboxButton(
 ) -> impl IntoView {
     let context = use_context::<ListboxContext>(cx).unwrap();
 
+    let open = move || context.open.get();
     let on_click = move |_| {
-        let open = context.open.get();
-        context.open.set(!open);
+        context.open.set(!open());
     };
 
     view! { cx,
-        <button class=class on:click=on_click aria-controls=context.id.to_string()>
+        <button
+            class=class
+            on:click=on_click
+            aria-haspopup="true"
+            aria-expanded=move || open().to_string()
+            aria-controls=context.id.to_string()
+        >
             {children(cx)}
         </button>
     }
@@ -58,17 +64,8 @@ pub fn ListboxButton(
 pub fn ListboxOptions(cx: Scope, children: ChildrenFn) -> impl IntoView {
     let context = use_context::<ListboxContext>(cx).unwrap();
 
-    let active = move || {
-        context.active.get().map(|id| id.to_string())
-        // .unwrap_or_default()
-    };
+    let active = move || context.active.get().map(|id| id.to_string());
     let open = move || context.open.get();
-
-    create_effect(cx, move |_| {
-        if let Some(id) = active() {
-            console_log(&id);
-        }
-    });
 
     view! { cx,
         <Show
@@ -79,6 +76,7 @@ pub fn ListboxOptions(cx: Scope, children: ChildrenFn) -> impl IntoView {
                 id=context.id.to_string()
                 role="listbox"
                 tabindex="0"
+                aria-orientation="vertical"
                 aria-activedescendant=active
             >
                 {children(cx)}
@@ -92,7 +90,7 @@ pub fn ListboxOption(
     cx: Scope,
     children: ChildrenFn,
     #[prop(optional)] class: String,
-    #[prop(optional)] disabled: bool,
+    #[prop(default = false)] disabled: bool,
 ) -> impl IntoView {
     let id = Uuid::new_v4();
     let el = create_node_ref::<Li>(cx);
@@ -108,12 +106,12 @@ pub fn ListboxOption(
     };
 
     let active = move || context.active.get() == Some(id);
-    let on_hover = move |_| {
+    let on_mouse_enter = move |_| {
         if !active() {
             context.active.set(Some(id));
         }
     };
-    let on_unhover = move |_| {
+    let on_mouse_leave = move |_| {
         if active() {
             context.active.set(None);
         }
@@ -124,13 +122,13 @@ pub fn ListboxOption(
             id=id.to_string()
             node_ref=el
             role="option"
+            tabindex="-1"
             class=class
-            // class:active=is_hovered
             on:click=on_click
-            disabled=disabled
-            aria-selected=move|| selected().to_string()
-            on:mouseenter=on_hover
-            on:mouseleave=on_unhover
+            disabled=move || disabled
+            aria-selected=move || selected().to_string()
+            on:mouseenter=on_mouse_enter
+            on:mouseleave=on_mouse_leave
         >
             {children(cx)}
         </li>

@@ -30,6 +30,8 @@ pub fn App(cx: Scope) -> impl IntoView {
     // Provides context that manages stylesheets, titles, meta tags, etc.
     provide_meta_context(cx);
 
+    let options = vec!["one", "two"];
+
     view! { cx,
         // injects a stylesheet into the document <head>
         // id=leptos means cargo-leptos will hot-reload this stylesheet
@@ -45,13 +47,14 @@ pub fn App(cx: Scope) -> impl IntoView {
                     <ListboxButton>
                         "toggle"
                     </ListboxButton>
-                    <ListboxOptions>
-                        <ListboxOption>
-                            "hello"
-                        </ListboxOption>
-                        <ListboxOption>
-                            "world"
-                        </ListboxOption>
+                    <ListboxOptions clone:options>
+                        {options.clone().into_iter().map(|option| {
+                            view! { cx,
+                                <ListboxOption class="aria-selected:bg-slate-400".to_string()>
+                                    {option}
+                                </ListboxOption>
+                            }
+                        }).collect::<Vec<_>>()}
                     </ListboxOptions>
                 </Listbox>
             </main>
