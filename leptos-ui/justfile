@@ -1,5 +1,0 @@
-dev-css:
-    npx tailwindcss -i ./style/input.css -o ./style/output.css --watch
-
-dev:
-    cargo leptos watch

@@ -23,7 +23,7 @@ to generate a new project template.
 
 to go to your newly created project.
 
-Of course you should explore around the project structure, but the best place to start with your application code is in `src/app.rs`.
+Of course, you should explore around the project structure, but the best place to start with your application code is in `src/app.rs`.
 
 ## Running your project
 
@@ -49,12 +49,19 @@ Copy these files to your remote server. The directory structure should be:
 leptos_start
 site/
 ```
-Set the following enviornment variables (updating for your project as needed):
-```text
-LEPTOS_OUTPUT_NAME="leptos_start"
-LEPTOS_SITE_ROOT="site"
-LEPTOS_SITE_PKG_DIR="pkg"
-LEPTOS_SITE_ADDR="127.0.0.1:3000"
-LEPTOS_RELOAD_PORT="3001"
+Set the following environment variables (updating for your project as needed):
+```sh
+export LEPTOS_OUTPUT_NAME="leptos_start"
+export LEPTOS_SITE_ROOT="site"
+export LEPTOS_SITE_PKG_DIR="pkg"
+export LEPTOS_SITE_ADDR="127.0.0.1:3000"
+export LEPTOS_RELOAD_PORT="3001"
 ```
 Finally, run the server binary.
+
+## Notes about CSR and Trunk:
+Although it is not recommended, you can also run your project without server integration using the feature `csr` and `trunk serve`:
+
+`trunk serve --open --features csr`
+
+This may be useful for integrating external tools which require a static site, e.g. `tauri`.
