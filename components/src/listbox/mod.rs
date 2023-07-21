@@ -73,13 +73,13 @@ pub fn ListboxOptions(cx: Scope, children: ChildrenFn) -> impl IntoView {
     view! { cx,
         <Show
             when=open
-            fallback=|cx| view! { cx, <></> }
+            fallback=|_cx| view! { cx, <></> }
         >
             <ul
                 id=context.id.to_string()
                 role="listbox"
                 tabindex="0"
-                aria-activedescendant=active()
+                aria-activedescendant=active
             >
                 {children(cx)}
             </ul>
