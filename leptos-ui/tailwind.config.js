@@ -6,5 +6,5 @@ module.exports = {
   theme: {
     extend: {},
   },
-  plugins: [require("./aria-plugin")],
+  plugins: [require("./aria-plugin"), require("@tailwindcss/typography")],
 };
