@@ -6,7 +6,11 @@ mod types;
 pub use types::*;
 
 #[component]
-pub fn Listbox(cx: Scope, children: ChildrenFn, #[prop(optional)] class: String) -> impl IntoView {
+pub fn Listbox(
+    cx: Scope,
+    children: ChildrenFn,
+    #[prop(optional, into)] class: Option<AttributeValue>,
+) -> impl IntoView {
     let context = ListboxContext::new(cx);
     provide_context(cx, context);
 
@@ -21,7 +25,7 @@ pub fn Listbox(cx: Scope, children: ChildrenFn, #[prop(optional)] class: String)
 pub fn ListboxButton(
     cx: Scope,
     children: Children,
-    #[prop(optional)] class: String,
+    #[prop(optional, into)] class: Option<AttributeValue>,
 ) -> impl IntoView {
     let context = use_context::<ListboxContext>(cx).unwrap();
 
@@ -44,21 +48,28 @@ pub fn ListboxButton(
 }
 
 #[component]
-pub fn ListboxOptions(cx: Scope, children: ChildrenFn) -> impl IntoView {
+pub fn ListboxOptions(
+    cx: Scope,
+    children: ChildrenFn,
+    #[prop(optional, into)] class: Option<AttributeValue>,
+) -> impl IntoView {
     let context = use_context::<ListboxContext>(cx).unwrap();
 
     let active = move || context.active.get().map(|id| id.to_string());
     let open = move || context.open.get();
 
+    let class = class.map(|c| c.into_attribute_boxed(cx));
+
     view! { cx,
         <Show
             when=open
-            fallback=|_cx| view! { cx, <></> }
+            fallback=|_| ()
         >
             <ul
                 id=context.id.to_string()
                 role="listbox"
                 tabindex="0"
+                class=class.clone()
                 aria-orientation="vertical"
                 aria-activedescendant=active
             >
@@ -72,7 +83,7 @@ pub fn ListboxOptions(cx: Scope, children: ChildrenFn) -> impl IntoView {
 pub fn ListboxOption(
     cx: Scope,
     children: ChildrenFn,
-    #[prop(optional)] class: Option<Attribute>,
+    #[prop(optional, into)] class: Option<AttributeValue>,
     #[prop(default = false)] disabled: bool,
 ) -> impl IntoView {
     let id = Uuid::new_v4();
