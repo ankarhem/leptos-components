@@ -50,7 +50,7 @@ pub fn App(cx: Scope) -> impl IntoView {
                     <ListboxOptions clone:options>
                         {options.clone().into_iter().map(|option| {
                             view! { cx,
-                                <ListboxOption class="aria-selected:bg-slate-400".to_string()>
+                                <ListboxOption class="aria-selected:bg-slate-400".into_attribute(cx)>
                                     {option}
                                 </ListboxOption>
                             }

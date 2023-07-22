@@ -1,26 +1,9 @@
 use leptos::html::Li;
-use leptos::leptos_dom::console_log;
 use leptos::*;
 use uuid::Uuid;
 
-#[derive(Clone, Copy)]
-pub struct ListboxContext {
-    id: Uuid,
-    open: RwSignal<bool>,
-    selected: RwSignal<Option<Uuid>>,
-    active: RwSignal<Option<Uuid>>,
-}
-
-impl ListboxContext {
-    fn new(cx: Scope) -> Self {
-        Self {
-            id: Uuid::new_v4(),
-            open: create_rw_signal(cx, false),
-            selected: create_rw_signal(cx, None),
-            active: create_rw_signal(cx, None),
-        }
-    }
-}
+mod types;
+pub use types::*;
 
 #[component]
 pub fn Listbox(cx: Scope, children: ChildrenFn, #[prop(optional)] class: String) -> impl IntoView {
@@ -89,7 +72,7 @@ pub fn ListboxOptions(cx: Scope, children: ChildrenFn) -> impl IntoView {
 pub fn ListboxOption(
     cx: Scope,
     children: ChildrenFn,
-    #[prop(optional)] class: String,
+    #[prop(optional)] class: Option<Attribute>,
     #[prop(default = false)] disabled: bool,
 ) -> impl IntoView {
     let id = Uuid::new_v4();
@@ -125,10 +108,11 @@ pub fn ListboxOption(
             tabindex="-1"
             class=class
             on:click=on_click
-            disabled=move || disabled
-            aria-selected=move || selected().to_string()
             on:mouseenter=on_mouse_enter
             on:mouseleave=on_mouse_leave
+            disabled=move || disabled
+            data-active=move || active().to_string()
+            aria-selected=move || selected().to_string()
         >
             {children(cx)}
         </li>
