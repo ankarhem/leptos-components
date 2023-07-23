@@ -1,6 +1,10 @@
-use leptos::html::Li;
+use leptos::ev::Event;
+use leptos::html::{Button, Ul};
+use leptos::leptos_dom::console_log;
 use leptos::*;
+use leptos_use::on_click_outside;
 use uuid::Uuid;
+use wasm_bindgen::JsCast;
 
 mod types;
 pub use types::*;
@@ -37,16 +41,18 @@ pub fn ListboxButton(
 
     let open = move || context.open.get();
     let on_click = move |_| {
+        console_log("click button");
         context.open.set(!open());
     };
 
     view! { cx,
         <button
+            id=move|| context.button_id.to_string()
             class=class
             on:click=on_click
             aria-haspopup="true"
             aria-expanded=move || open().to_string()
-            aria-controls=context.id.to_string()
+            aria-controls=move || context.id.to_string()
         >
             {children(cx)}
         </button>
@@ -59,6 +65,7 @@ pub fn ListboxOptions(
     children: ChildrenFn,
     #[prop(optional, into)] class: Option<AttributeValue>,
 ) -> impl IntoView {
+    let el = create_node_ref::<Ul>(cx);
     let context = use_context::<ListboxContext>(cx).unwrap();
 
     let active = move || context.active.get().map(|id| id.to_string());
@@ -66,13 +73,33 @@ pub fn ListboxOptions(
 
     let class = class.map(|c| c.into_attribute_boxed(cx));
 
+    let button_id = move || context.button_id.to_string();
+
+    let handler = move |event: Event| {
+        if context.open.get_untracked() {
+            context.open.set(false);
+
+            // Prevent re-opening the listbox when clicking the button
+            let element: web_sys::HtmlElement = event
+                .target()
+                .unwrap()
+                .unchecked_into::<web_sys::HtmlElement>();
+            if element.id() == button_id() {
+                event.stop_propagation();
+            }
+        }
+    };
+    create_effect(cx, move |_| on_click_outside(cx, el, handler));
+
     view! { cx,
         <Show
             when=open
             fallback=|_| ()
+            clone:el
         >
             <ul
-                id=context.id.to_string()
+                id=move || context.id.to_string()
+                _ref=el
                 role="listbox"
                 tabindex="0"
                 class=class.clone()
@@ -97,7 +124,6 @@ where
     T: 'static + Clone + Copy + PartialEq,
 {
     let id = Uuid::new_v4();
-    let el = create_node_ref::<Li>(cx);
     let context = use_context::<ListboxContext>(cx).unwrap();
     let listbox_value = use_context::<ListboxValue<T>>(cx).unwrap().0;
 
@@ -106,7 +132,7 @@ where
     let on_click = move |_| {
         if !selected() {
             listbox_value.set(value);
-            // context.open.set(false);
+            context.open.set(false);
         }
     };
 
@@ -124,8 +150,7 @@ where
 
     view! { cx,
         <li
-            id=id.to_string()
-            node_ref=el
+            id=move || id.to_string()
             role="option"
             tabindex="-1"
             class=class

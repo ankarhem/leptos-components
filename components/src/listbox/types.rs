@@ -6,6 +6,7 @@ pub struct ListboxContext {
     pub(super) id: Uuid,
     pub(super) open: RwSignal<bool>,
     pub(super) active: RwSignal<Option<Uuid>>,
+    pub(super) button_id: Uuid,
 }
 
 #[derive(Clone, Copy)]
@@ -19,6 +20,7 @@ impl ListboxContext {
             id: Uuid::new_v4(),
             open: create_rw_signal(cx, false),
             active: create_rw_signal(cx, None),
+            button_id: Uuid::new_v4(),
         }
     }
 }
