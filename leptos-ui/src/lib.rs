@@ -19,15 +19,23 @@ pub fn App(cx: Scope) -> impl IntoView {
 
         <Title text="Welcome to Leptos"/>
 
-        <Header/>
-
         <Router>
-            <div class="max-w-8xl mx-auto w-full px-4 sm:px-6 lg:px-8 flex items-start pt-4 pb-24 sm:pt-6 lg:pb-12 lg:space-x-8">
+            <Header/>
+            <div class="mx-auto flex max-w-8xl px-4 sm:px-6 lg:px-8">
                 <Navigation/>
-                <main id="main-content" class="w-[600px] mx-auto">
+                <main id="main-content" class="flex min-w-0 flex-1 pt-4">
+                    <article class="mx-auto min-w-0 flex-1 prose prose-invert prose-headings:scroll-mt-24 lg:prose-lg min-w-0 max-w-none">
                     <Routes>
                         <Route path="/components/listbox" view=ListboxPage />
                     </Routes>
+                    </article>
+                <div class="hidden w-64 shrink-0 lg:block lg:pl-8">
+                    <p id="toc" class="font-semibold uppercase tracking-wide text-white">"Table of Contents"</p>
+                    <nav aria-labelledby="toc">
+                        <ul>
+                        </ul>
+                    </nav>
+                </div>
                 </main>
             </div>
         </Router>

@@ -4,7 +4,11 @@ module.exports = {
     files: ["*.html", "./src/**/*.rs"],
   },
   theme: {
-    extend: {},
+    extend: {
+      maxWidth: {
+        "8xl": "90rem",
+      },
+    },
   },
-  plugins: [require("./aria-plugin"), require("@tailwindcss/typography")],
+  plugins: [require("@tailwindcss/typography")],
 };

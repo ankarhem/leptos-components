@@ -1,40 +1,31 @@
 use leptos::*;
+use leptos_router::*;
 
 #[component]
 pub fn Header(cx: Scope) -> impl IntoView {
     view! { cx,
-        <header class="firefox:bg-opacity-90 sticky inset-x-0 top-0 z-10 border-b border-gray-800 bg-gray-900 bg-opacity-50 py-4 backdrop-blur backdrop-filter">
-            <a
+        <header class="sticky top-0 z-30 min-h-[72px] bg-gray-900 bg-opacity-50 backdrop-blur backdrop-filter firefox:bg-opacity-90">
+            <A
                 href="#main-content"
                 class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-full p-1 opacity-0 transition focus:translate-y-0 focus:opacity-100 focus:ease-in"
             >
                 "Jump to Content"
-            </a>
-            <div class="max-w-8xl mx-auto w-full px-4 sm:px-6 lg:px-8">
-                <nav aria-label="Site Navigation" class="flex items-center">
-                    <a
+            </A>
+            <div class="mx-auto max-w-8xl xl:px-8">
+                <nav
+                    aria-label="Site Navigation"
+                    class="flex items-center justify-between border-b border-gray-800 px-4 py-5 sm:px-6 lg:px-8 xl:px-0"
+                >
+                    <A
                         class="py-2 px-4 text-slate-100 hover:text-slate-400 mr-auto block active"
-                        aria-current="page"
                         href="/"
                     >
                         "leptos-a11y"
-                    </a>
-                    <a
-                        class="py-2 px-4 text-slate-100 hover:text-slate-400 hidden md:block inactive"
-                        href="/design-philosophy"
-                    >
-                        "Design Philosophy"
-                    </a>
-                    <a
-                        class="py-2 px-4 text-slate-100 hover:text-slate-400 hidden md:block inactive"
-                        href="/labeling-and-descriptions"
-                    >
-                        "Labeling & Descriptions"
-                    </a>
+                    </A>
                     <a
                         // github.com/ankarhem/leptos-components"
                         href="https://github.com/ankarhem/leptos-components"
-                        class="block fill-slate-100 hover:fill-slate-400"
+                        class="block fill-slate-400 hover:fill-slate-100"
                     >
                         <span class="sr-only">"GitHub Repository for leptos-a11y"</span>
                         <svg
