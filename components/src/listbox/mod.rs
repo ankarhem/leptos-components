@@ -6,11 +6,17 @@ mod types;
 pub use types::*;
 
 #[component]
-pub fn Listbox(
+pub fn Listbox<T>(
     cx: Scope,
     children: ChildrenFn,
+    value: RwSignal<T>,
     #[prop(optional, into)] class: Option<AttributeValue>,
-) -> impl IntoView {
+) -> impl IntoView
+where
+    T: 'static + Clone + Copy + PartialEq,
+{
+    let value = ListboxValue(value);
+    provide_context(cx, value);
     let context = ListboxContext::new(cx);
     provide_context(cx, context);
 
@@ -80,21 +86,26 @@ pub fn ListboxOptions(
 }
 
 #[component]
-pub fn ListboxOption(
+pub fn ListboxOption<T>(
     cx: Scope,
     children: ChildrenFn,
+    value: T,
     #[prop(optional, into)] class: Option<AttributeValue>,
     #[prop(default = false)] disabled: bool,
-) -> impl IntoView {
+) -> impl IntoView
+where
+    T: 'static + Clone + Copy + PartialEq,
+{
     let id = Uuid::new_v4();
     let el = create_node_ref::<Li>(cx);
     let context = use_context::<ListboxContext>(cx).unwrap();
+    let listbox_value = use_context::<ListboxValue<T>>(cx).unwrap().0;
 
-    let selected = move || context.selected.get() == Some(id);
+    let selected = move || listbox_value.get() == value;
 
     let on_click = move |_| {
         if !selected() {
-            context.selected.set(Some(id));
+            listbox_value.set(value);
             // context.open.set(false);
         }
     };

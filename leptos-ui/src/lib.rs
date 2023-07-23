@@ -21,9 +21,9 @@ pub fn App(cx: Scope) -> impl IntoView {
 
         <Router>
             <Header/>
-            <div class="mx-auto flex max-w-8xl px-4 sm:px-6 lg:px-8">
+            <div class="mx-auto flex max-w-8xl px-4 sm:px-6 lg:px-8 pt-4">
                 <Navigation/>
-                <main id="main-content" class="flex min-w-0 flex-1 pt-4">
+                <main id="main-content" class="flex min-w-0 flex-1">
                     <article class="mx-auto min-w-0 flex-1 prose prose-invert prose-headings:scroll-mt-24 lg:prose-lg min-w-0 max-w-none">
                     <Routes>
                         <Route path="/components/listbox" view=ListboxPage />
