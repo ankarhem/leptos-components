@@ -15,7 +15,7 @@ where
     T: 'static + Clone + Copy + PartialEq;
 
 impl ListboxContext {
-    pub(crate) fn new(cx: Scope) -> Self {
+    pub(super) fn new(cx: Scope) -> Self {
         Self {
             id: Uuid::new_v4(),
             open: create_rw_signal(cx, false),

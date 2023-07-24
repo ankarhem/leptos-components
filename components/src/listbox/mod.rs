@@ -1,5 +1,5 @@
 use leptos::ev::Event;
-use leptos::html::{Button, Ul};
+use leptos::html::Ul;
 use leptos::leptos_dom::console_log;
 use leptos::*;
 use leptos_use::on_click_outside;
@@ -40,9 +40,14 @@ pub fn ListboxButton(
     let context = use_context::<ListboxContext>(cx).unwrap();
 
     let open = move || context.open.get();
+
     let on_click = move |_| {
-        console_log("click button");
-        context.open.set(!open());
+        if context.open.get_untracked() {
+            context.open.set(false);
+            context.active.set(None);
+        } else {
+            context.open.set(true);
+        }
     };
 
     view! { cx,
@@ -75,21 +80,24 @@ pub fn ListboxOptions(
 
     let button_id = move || context.button_id.to_string();
 
-    let handler = move |event: Event| {
-        if context.open.get_untracked() {
-            context.open.set(false);
+    // Handle clicking outside to close
+    create_effect(cx, move |_| {
+        on_click_outside(cx, el, move |event: Event| {
+            if context.open.get_untracked() {
+                context.open.set(false);
+                context.active.set(None);
 
-            // Prevent re-opening the listbox when clicking the button
-            let element: web_sys::HtmlElement = event
-                .target()
-                .unwrap()
-                .unchecked_into::<web_sys::HtmlElement>();
-            if element.id() == button_id() {
-                event.stop_propagation();
+                // Prevent re-opening the listbox when clicking the button
+                let element: web_sys::HtmlElement = event
+                    .target()
+                    .unwrap()
+                    .unchecked_into::<web_sys::HtmlElement>();
+                if element.id() == button_id() {
+                    event.stop_propagation();
+                }
             }
-        }
-    };
-    create_effect(cx, move |_| on_click_outside(cx, el, handler));
+        })
+    });
 
     view! { cx,
         <Show
@@ -133,10 +141,17 @@ where
         if !selected() {
             listbox_value.set(value);
             context.open.set(false);
+            context.active.set(None);
         }
     };
 
     let active = move || context.active.get() == Some(id);
+
+    if context.active.get_untracked().is_none() && listbox_value.get_untracked() == value {
+        console_log(&format!("Setting active to {id}"));
+        context.active.set(Some(id));
+    }
+
     let on_mouse_enter = move |_| {
         if !active() {
             context.active.set(Some(id));
