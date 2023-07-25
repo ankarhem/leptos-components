@@ -28,6 +28,10 @@ web-sys = { version = "0.3.64", features = [
   "HtmlElement",
   "HtmlInputElement",
   "XPathResult",
+  "KeyboardEvent",
+  "KeyboardEventInit",
+  "Window",
+  "MouseEvent",
 ] }
 leptos = { version = "0.4", features = ["csr"] }
 leptos_router = { version = "0.4", features = ["csr"] }

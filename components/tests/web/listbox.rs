@@ -2,6 +2,7 @@ use super::*;
 use crate::fixtures::listbox as ui;
 use crate::utils::*;
 use pretty_assertions::assert_eq;
+use web_sys::{KeyboardEvent, KeyboardEventInit};
 
 const OPTIONS: [&str; 4] = ["one", "two", "three", "four"];
 
@@ -89,6 +90,33 @@ fn should_toggle_data_active_on_hover() {
             .length(),
         0
     );
+}
+#[wasm_bindgen_test]
+fn can_navigate_with_keyboard() {
+    ui::render_listbox(OPTIONS);
+    ui::listbox_button_html_element().click();
+
+    let el_one = find_by_text(OPTIONS[0]);
+    assert_eq!(el_one.get_attribute("data-active"), Some("true".into()));
+
+    let el_two = find_by_text(OPTIONS[1]);
+    let event = KeyboardEvent::new_with_keyboard_event_init_dict(
+        "keydown",
+        KeyboardEventInit::new().key("ArrowDown"),
+    )
+    .unwrap();
+    leptos::document().dispatch_event(&event).unwrap();
+
+    assert_eq!(el_two.get_attribute("data-active"), Some("true".into()));
+
+    let event = KeyboardEvent::new_with_keyboard_event_init_dict(
+        "keydown",
+        KeyboardEventInit::new().key("ArrowUp"),
+    )
+    .unwrap();
+    leptos::document().dispatch_event(&event).unwrap();
+
+    assert_eq!(el_one.get_attribute("data-active"), Some("true".into()));
 }
 
 // FUNCTIONALITY TESTS - END
