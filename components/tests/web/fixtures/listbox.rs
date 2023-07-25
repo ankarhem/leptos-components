@@ -39,10 +39,12 @@ fn remove_existing_test() {
     }
 }
 
-pub fn render_listbox<T>(options: Vec<T>)
+pub fn render_listbox<T, O>(options: O)
 where
+    O: Into<Vec<T>>,
     T: IntoView + Clone + Copy + 'static + PartialEq,
 {
+    let options = options.into();
     remove_existing_test();
     mount_to_body(move |cx| view! { cx, <ListboxExample options=options /> })
 }
@@ -74,4 +76,18 @@ pub fn listbox_options_html_element() -> HtmlElement {
 pub fn listbox_option_node_list() -> NodeList {
     let selector = "li[role='option']".to_string();
     leptos::document().query_selector_all(&selector).unwrap()
+}
+
+pub fn listbox_selected_option_element() -> Element {
+    let selector = "li[aria-selected='true']".to_string();
+    leptos::document()
+        .query_selector(&selector)
+        .unwrap()
+        .unwrap()
+}
+
+pub fn listbox_selected_option_html_element() -> HtmlElement {
+    listbox_selected_option_element()
+        .dyn_into::<HtmlElement>()
+        .unwrap()
 }

@@ -1,15 +1,15 @@
 use super::*;
 use crate::fixtures::listbox as ui;
+use crate::utils::*;
 use pretty_assertions::assert_eq;
-use wasm_bindgen::JsCast;
-use web_sys::HtmlElement;
 
-// Functional tests
+const OPTIONS: [&str; 4] = ["one", "two", "three", "four"];
+
+// FUNCTIONALITY TESTS - BEGIN
 
 #[wasm_bindgen_test]
 fn should_not_render_options_before_opened() {
-    let options = vec!["one", "two", "three", "four"];
-    ui::render_listbox(options);
+    ui::render_listbox(OPTIONS);
 
     let options = ui::listbox_option_node_list();
 
@@ -18,8 +18,7 @@ fn should_not_render_options_before_opened() {
 
 #[wasm_bindgen_test]
 fn should_render_options_after_opened() {
-    let options = vec!["one", "two", "three", "four"];
-    ui::render_listbox(options);
+    ui::render_listbox(OPTIONS);
     ui::listbox_button_html_element().click();
 
     let options = ui::listbox_option_node_list();
@@ -29,36 +28,76 @@ fn should_render_options_after_opened() {
 
 #[wasm_bindgen_test]
 fn first_option_is_selected_by_default() {
-    let options = vec!["one", "two", "three", "four"];
-    ui::render_listbox(options.clone());
+    ui::render_listbox(OPTIONS);
     let button_text = ui::listbox_button_html_element().inner_text();
 
-    assert_eq!(button_text, options[0].to_string());
+    assert_eq!(button_text, OPTIONS[0].to_string());
 }
 
 #[wasm_bindgen_test]
 fn can_select_an_option() {
-    let options = vec!["one", "two", "three", "four"];
-    ui::render_listbox(options.clone());
+    ui::render_listbox(OPTIONS);
 
     ui::listbox_button_html_element().click();
-    ui::listbox_option_node_list()
-        .item(1)
-        .unwrap()
-        .dyn_into::<HtmlElement>()
-        .unwrap()
-        .click();
+    find_by_text(OPTIONS[1]).click();
 
     let button_text = ui::listbox_button_html_element().inner_text();
 
-    assert_eq!(button_text, options[1].to_string());
+    assert_eq!(button_text, OPTIONS[1].to_string());
 }
 
-// Aria tests
 #[wasm_bindgen_test]
-fn should_have_aria_haspopup() {
-    let options = vec!["one", "two", "three", "four"];
-    ui::render_listbox(options);
+fn should_set_data_active_on_selected_element_by_default() {
+    ui::render_listbox(OPTIONS);
+
+    ui::listbox_button_html_element().click();
+    let selected_option = ui::listbox_selected_option_html_element();
+
+    assert_eq!(
+        selected_option.get_attribute("data-active"),
+        Some("true".into())
+    );
+    assert_eq!(
+        leptos::document()
+            .query_selector_all("[data-active='true']")
+            .unwrap()
+            .length(),
+        1
+    );
+}
+
+#[wasm_bindgen_test]
+fn should_toggle_data_active_on_hover() {
+    ui::render_listbox(OPTIONS);
+
+    ui::listbox_button_html_element().click();
+    let selected_option = ui::listbox_selected_option_html_element();
+
+    assert_eq!(
+        selected_option.get_attribute("data-active"),
+        Some("true".into())
+    );
+
+    let el_two = find_by_text(OPTIONS[1]);
+    el_two.mouse_enter();
+    assert_eq!(el_two.get_attribute("data-active"), Some("true".into()));
+    el_two.mouse_leave();
+    assert_eq!(
+        leptos::document()
+            .query_selector_all("[data-active='true']")
+            .unwrap()
+            .length(),
+        0
+    );
+}
+
+// FUNCTIONALITY TESTS - END
+
+// ARIA TESTS - BEGIN
+
+#[wasm_bindgen_test]
+fn should_set_aria_haspopup() {
+    ui::render_listbox(OPTIONS);
     let button = ui::listbox_button_html_element();
 
     assert_eq!(button.get_attribute("aria-haspopup"), Some("true".into()));
@@ -66,8 +105,7 @@ fn should_have_aria_haspopup() {
 
 #[wasm_bindgen_test]
 fn should_toggle_aria_expanded() {
-    let options = vec!["one", "two", "three", "four"];
-    ui::render_listbox(options);
+    ui::render_listbox(OPTIONS);
     let button = ui::listbox_button_html_element();
 
     assert_eq!(button.get_attribute("aria-expanded"), Some("false".into()));
@@ -77,11 +115,32 @@ fn should_toggle_aria_expanded() {
 
 #[wasm_bindgen_test]
 fn should_have_matching_id_for_aria_controls() {
-    let options = vec!["one", "two", "three", "four"];
-    ui::render_listbox(options);
+    ui::render_listbox(OPTIONS);
     let button = ui::listbox_button_html_element();
     button.click();
     let ul = ui::listbox_options_html_element();
 
     assert_eq!(button.get_attribute("aria-controls"), Some(ul.id()));
 }
+
+#[wasm_bindgen_test]
+fn should_set_aria_selected() {
+    ui::render_listbox(OPTIONS);
+    let button = ui::listbox_button_html_element();
+    button.click();
+    let selected_option = ui::listbox_selected_option_html_element();
+
+    assert_eq!(
+        selected_option.get_attribute("aria-selected"),
+        Some("true".into())
+    );
+    assert_eq!(
+        leptos::document()
+            .query_selector_all("[aria-selected='true']")
+            .unwrap()
+            .length(),
+        1
+    );
+}
+
+// ARIA TESTS - END
