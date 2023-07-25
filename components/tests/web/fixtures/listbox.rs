@@ -4,8 +4,11 @@ use wasm_bindgen::JsCast;
 use web_sys::{Element, HtmlElement, NodeList};
 
 #[component]
-fn ListboxExample(cx: Scope) -> impl IntoView {
-    let options = vec!["one", "two", "three", "four"];
+fn ListboxExample<T>(cx: Scope, options: Vec<T>) -> impl IntoView
+where
+    T: IntoView + Clone + Copy + 'static + PartialEq,
+{
+    // let options = vec!["one", "two", "three", "four"];
     let value = create_rw_signal(cx, options[0]);
 
     view! { cx,
@@ -36,9 +39,12 @@ fn remove_existing_test() {
     }
 }
 
-pub fn render_listbox() {
+pub fn render_listbox<T>(options: Vec<T>)
+where
+    T: IntoView + Clone + Copy + 'static + PartialEq,
+{
     remove_existing_test();
-    mount_to_body(move |cx| view! { cx, <ListboxExample /> })
+    mount_to_body(move |cx| view! { cx, <ListboxExample options=options /> })
 }
 
 pub fn listbox_button_element() -> Element {
@@ -59,6 +65,10 @@ pub fn listbox_options_element() -> Element {
         .query_selector(&selector)
         .unwrap()
         .unwrap()
+}
+
+pub fn listbox_options_html_element() -> HtmlElement {
+    listbox_options_element().dyn_into::<HtmlElement>().unwrap()
 }
 
 pub fn listbox_option_node_list() -> NodeList {
