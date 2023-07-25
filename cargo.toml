@@ -1,6 +1,3 @@
 [workspace]
-
-members = [
-  "components",
-  "leptos-ui",
-]
+resolver = "2"
+members = ["components", "leptos-ui"]

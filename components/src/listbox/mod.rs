@@ -1,6 +1,5 @@
 use leptos::ev::Event;
 use leptos::html::Ul;
-use leptos::leptos_dom::console_log;
 use leptos::*;
 use leptos_use::on_click_outside;
 use uuid::Uuid;
@@ -148,7 +147,6 @@ where
     let active = move || context.active.get() == Some(id);
 
     if context.active.get_untracked().is_none() && listbox_value.get_untracked() == value {
-        console_log(&format!("Setting active to {id}"));
         context.active.set(Some(id));
     }
 

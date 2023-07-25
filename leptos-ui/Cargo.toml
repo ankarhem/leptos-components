@@ -29,6 +29,7 @@ ssr = [
   "leptos/ssr",
   "leptos_meta/ssr",
   "leptos_router/ssr",
+  "leptos_a11y/ssr",
 ]
 
 [package.metadata.leptos]
